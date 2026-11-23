@@ -1,6 +1,6 @@
 import { useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { ArrowUp, Brain, Menu, Moon, Plus, Sparkles, Sun } from "lucide-react";
-import { sendChatMessage } from "./services/chat-api";
+import { streamChatMessage } from "./services/chat-api";
 
 type Message = {
   id: number;
@@ -57,31 +57,38 @@ export default function App() {
     setDraft("");
     setIsSending(true);
 
+    const userId = nextId.current++;
+    const assistantId = nextId.current++;
+
     setMessages((current) => [
       ...current,
-      { id: nextId.current++, role: "user", content },
+      { id: userId, role: "user", content },
+      { id: assistantId, role: "assistant", content: "" },
     ]);
 
     try {
-      const answer = await sendChatMessage(content);
-
-      setMessages((current) => [
-        ...current,
-        {
-          id: nextId.current++,
-          role: "assistant",
-          content: answer,
-        },
-      ]);
+      await streamChatMessage(content, (delta) => {
+        setMessages((current) =>
+          current.map((message) =>
+            message.id === assistantId
+              ? { ...message, content: message.content + delta }
+              : message,
+          ),
+        );
+      });
     } catch {
-      setMessages((current) => [
-        ...current,
-        {
-          id: nextId.current++,
-          role: "assistant",
-          content: "I couldn't reach the assistant. Please try again.",
-        },
-      ]);
+      setMessages((current) =>
+        current.map((message) =>
+          message.id === assistantId
+            ? {
+                ...message,
+                content: message.content
+                  ? `${message.content}\n\nResponse interrupted. Please try again.`
+                  : "I couldn't reach the assistant. Please try again.",
+              }
+            : message,
+        ),
+      );
     } finally {
       setIsSending(false);
     }
