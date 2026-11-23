@@ -1,6 +1,6 @@
+import { Readable } from "node:stream";
 import cors from "@fastify/cors";
 import Fastify from "fastify";
-import { Readable } from "node:stream";
 import { z } from "zod";
 import { config } from "./config.js";
 import { streamAnswer } from "./services/chat-service.js";
@@ -41,10 +41,7 @@ export function buildApp() {
     });
 
     try {
-      const upstream = await streamAnswer(
-        parsed.data.message,
-        controller.signal,
-      );
+      const upstream = await streamAnswer(parsed.data.message, controller.signal);
 
       const output = Readable.from(
         (async function* () {
@@ -52,10 +49,7 @@ export function buildApp() {
             for await (const event of upstream) {
               if (event.type === "response.output_text.delta") {
                 yield encodeEvent({ type: "delta", text: event.delta });
-              } else if (
-                event.type === "response.failed" ||
-                event.type === "error"
-              ) {
+              } else if (event.type === "response.failed" || event.type === "error") {
                 throw new Error("OpenAI stream failed");
               }
             }
@@ -75,7 +69,7 @@ export function buildApp() {
 
       return reply
         .type("application/x-ndjson; charset=utf-8")
-        .header("Cache_control", "no-cache, no-transform")
+        .header("Cache-Control", "no-cache, no-transform")
         .header("X-Accel-Buffering", "no")
         .send(output);
     } catch (error) {

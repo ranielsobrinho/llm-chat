@@ -9,7 +9,7 @@ button { cursor: pointer; }
 .sidebar { position: sticky; top: 0; padding: 24px 16px 15px; color: #eeeeea; background: #20211f; }
 .brand-row { display: flex; align-items: center; gap: 10px; padding: 0 7px; height: 32px; }
 .brand-mark { display: grid; place-items: center; width: 28px; height: 28px; color: #24251f; background: #c7d0a3; border-radius: 9px; }
-.brand-name { font: 700 20px system-ui, sans-serif; letter-spacing: -1.2px; }.brand-dot { color: #c7d0a3; }
+.brand-name { font: 700 20px system-ui, sans-serif; letter-spacing: -1.2px; }
 .icon-button { display: grid; place-items: center; border: 0; background: transparent; color: inherit; }
 .mobile-menu-close, .mobile-menu-open { display: none; }
 .new-chat-button { display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 39px; padding: 11px 11px; color: #ededeb; background: #2b2d2a; border: 1px solid #3a3b38; border-radius: 9px; font-size: 12px; text-align: left; transition: background .2s; }

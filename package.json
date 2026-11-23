@@ -5,11 +5,17 @@
     "dev": "turbo dev",
     "build": "turbo build",
     "check-types": "turbo check-types",
-    "dev:web": "turbo -F web dev"
+    "dev:web": "turbo -F web dev",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.2.0",
+    "husky": "^9.1.7",
     "turbo": "^2.5.4",
     "typescript": "catalog:"
   },
-  "packageManager": "pnpm@10.18.3"
+  "packageManager": "pnpm@10.18.3",
+  "license": "MIT"
 }

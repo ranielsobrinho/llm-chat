@@ -1,5 +1,5 @@
-import { useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { ArrowUp, Brain, Menu, Moon, Plus, Sparkles, Sun } from "lucide-react";
+import { type FormEvent, type KeyboardEvent, useRef, useState } from "react";
 import { streamChatMessage } from "./services/chat-api";
 
 type Message = {
@@ -11,8 +11,7 @@ type Message = {
 const welcomeMessage: Message = {
   id: 0,
   role: "assistant",
-  content:
-    "Hi there! I’m your AI assistant. What would you like to explore today?",
+  content: "Hi there! I’m your AI assistant. What would you like to explore today?",
 };
 
 const suggestions = [
@@ -70,9 +69,7 @@ export default function App() {
       await streamChatMessage(content, (delta) => {
         setMessages((current) =>
           current.map((message) =>
-            message.id === assistantId
-              ? { ...message, content: message.content + delta }
-              : message,
+            message.id === assistantId ? { ...message, content: message.content + delta } : message,
           ),
         );
       });
@@ -117,11 +114,10 @@ export default function App() {
   const hasUserMessages = messages.some((message) => message.role === "user");
 
   return (
-    <div
-      className={`app-shell flex min-h-screen ${theme === "dark" ? "theme-dark" : ""}`}
-    >
+    <div className={`app-shell flex min-h-screen ${theme === "dark" ? "theme-dark" : ""}`}>
       {sidebarOpen && (
         <button
+          type="button"
           aria-label="Close menu"
           className="sidebar-backdrop"
           onClick={() => setSidebarOpen(false)}
@@ -134,10 +130,9 @@ export default function App() {
           <div className="brand-mark">
             <Brain size={18} strokeWidth={2.2} />
           </div>
-          <span className="brand-name">
-            muse<span className="brand-dot">.</span>
-          </span>
+          <span className="brand-name">RanGPT</span>
           <button
+            type="button"
             className="icon-button mobile-menu-close"
             aria-label="Close menu"
             onClick={() => setSidebarOpen(false)}
@@ -146,6 +141,7 @@ export default function App() {
           </button>
         </div>
         <button
+          type="button"
           className="new-chat-button"
           onClick={startNewChat}
           disabled={isSending}
@@ -183,6 +179,7 @@ export default function App() {
               <span className="profile-plan">Personal</span>
             </div>
             <button
+              type="button"
               className="icon-button profile-more"
               aria-label="Workspace options"
             >
@@ -195,6 +192,7 @@ export default function App() {
       <main className="main-panel relative flex min-h-screen min-w-0 flex-1 flex-col">
         <header className="topbar flex h-[62px] shrink-0 items-center border-b px-[35px]">
           <button
+            type="button"
             className="icon-button mobile-menu-open"
             aria-label="Open menu"
             onClick={() => setSidebarOpen(true)}
@@ -220,10 +218,7 @@ export default function App() {
             >
               {theme === "light" ? <Moon size={17} /> : <Sun size={17} />}
             </button>
-            <button
-              className="icon-button topbar-more"
-              aria-label="More options"
-            >
+            <button type="button" className="icon-button topbar-more" aria-label="More options">
               ···
             </button>
           </div>
@@ -255,6 +250,7 @@ export default function App() {
               <div className="suggestions">
                 {suggestions.map((suggestion) => (
                   <button
+                    type="button"
                     key={suggestion.label}
                     className="suggestion-card"
                     onClick={() => {
@@ -283,7 +279,7 @@ export default function App() {
                   ) : null}
                   <div className="message-body">
                     <span className="message-author">
-                      {message.role === "assistant" ? "Muse" : "You"}
+                      {message.role === "assistant" ? "RanGPT" : "You"}
                     </span>
                     <p>{message.content}</p>
                   </div>
@@ -310,28 +306,22 @@ export default function App() {
             />
             <div className="composer-footer">
               <span className="composer-hint">
-                <kbd>↵</kbd> to send <span className="hint-divider">·</span>{" "}
-                <kbd>⇧ ↵</kbd> for new line
+                <kbd>↵</kbd> to send <span className="hint-divider">·</span> <kbd>⇧ ↵</kbd> for new
+                line
               </span>
               <button
                 className="send-button"
                 type="submit"
-                aria-label={
-                  isSending ? "Waiting for a response" : "Send message"
-                }
+                aria-label={isSending ? "Waiting for a response" : "Send message"}
                 disabled={!draft.trim() || isSending}
               >
                 <ArrowUp size={17} strokeWidth={2.3} />
               </button>
             </div>
           </form>
-          {isSending && (
-            <p role="status" className="message-author">
-              Muse is thinking
-            </p>
-          )}
+          {isSending && <output className="message-author">RanGPT is thinking</output>}
           <div className="disclaimer">
-            Muse can make mistakes. Double-check anything important.
+            RanGPT can make mistakes. Double-check anything important.
           </div>
         </div>
       </main>
