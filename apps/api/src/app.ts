@@ -12,7 +12,7 @@ export function buildApp() {
   const app = Fastify({ logger: true });
 
   app.register(cors, {
-    origin: config.WEB_ORIGIN,
+    origin: config.WEB_ORIGINS,
     methods: ["GET", "POST"],
   });
 
