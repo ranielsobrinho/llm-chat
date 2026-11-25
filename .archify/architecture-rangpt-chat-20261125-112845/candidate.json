@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "RanGPT Chat Architecture",
+    "locale": "en",
+    "output": ".archify/architecture-rangpt-chat-20261125-112845/rangpt-chat-architecture.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    {
+      "id": "browser",
+      "type": "frontend",
+      "label": "Web client",
+      "sublabel": "React · local session token",
+      "pos": [40, 250],
+      "size": [170, 74]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "Fastify API",
+      "sublabel": "Validation · ownership · rate limits",
+      "pos": [360, 244],
+      "size": [220, 86]
+    },
+    {
+      "id": "openai",
+      "type": "cloud",
+      "label": "OpenAI Responses API",
+      "sublabel": "gpt-6-luna · streamed output",
+      "pos": [710, 90],
+      "size": [200, 78]
+    },
+    {
+      "id": "mongodb",
+      "type": "database",
+      "label": "MongoDB",
+      "sublabel": "Owner-scoped conversation history",
+      "pos": [710, 380],
+      "size": [200, 78]
+    }
+  ],
+  "connections": [
+    {
+      "id": "client-request",
+      "from": "browser",
+      "to": "api",
+      "label": "Chat + history requests",
+      "variant": "emphasis"
+    },
+    {
+      "id": "client-stream",
+      "from": "api",
+      "to": "browser",
+      "label": "NDJSON response stream"
+    },
+    {
+      "id": "model-request",
+      "from": "api",
+      "to": "openai",
+      "label": "Conversation context"
+    },
+    {
+      "id": "model-stream",
+      "from": "openai",
+      "to": "api",
+      "label": "Generated text deltas"
+    },
+    {
+      "id": "history-storage",
+      "from": "api",
+      "to": "mongodb",
+      "label": "Read / write history",
+      "variant": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Protection and limits",
+      "items": [
+        "100 requests per 15 minutes per IP; chat limited to 10 per minute",
+        "16 KB request cap and 4,000-character message limit",
+        "Hashed anonymous session tokens scope access to conversations",
+        "Prompt injection is mitigated with untrusted-input instructions; the model has no tools"
+      ]
+    }
+  ]
+}

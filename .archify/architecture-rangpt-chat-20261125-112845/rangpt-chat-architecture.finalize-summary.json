@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "architecture",
+  "quality": "showcase",
+  "specification": {
+    "path": "/home/ranielsobrinho/Desenvolvimento/projetos/llm-chat/.archify/architecture-rangpt-chat-20261125-112845/candidate.json",
+    "sha256": "bb4ffc9849bc46ce3738d7fe132aedfd0eddc251ed7e2501ae155990c0764e8d",
+    "bytes": 2198
+  },
+  "artifact": {
+    "path": "/home/ranielsobrinho/Desenvolvimento/projetos/llm-chat/.archify/architecture-rangpt-chat-20261125-112845/rangpt-chat-architecture.html",
+    "sha256": "b1c6f2f64f6fa887f55a996a622aa4327b6f63239a1da39d516862cc2d7d8b8a",
+    "bytes": 814138
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/home/ranielsobrinho/Desenvolvimento/projetos/llm-chat/.archify/architecture-rangpt-chat-20261125-112845/rangpt-chat-architecture.finalize.json",
+    "summaryReceipt": "/home/ranielsobrinho/Desenvolvimento/projetos/llm-chat/.archify/architecture-rangpt-chat-20261125-112845/rangpt-chat-architecture.finalize-summary.json",
+    "browserCheckReceipt": "/home/ranielsobrinho/Desenvolvimento/projetos/llm-chat/.archify/architecture-rangpt-chat-20261125-112845/rangpt-chat-architecture.browser-check.json"
+  },
+  "update": {
+    "status": "update_available",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.3.1",
+    "releaseNotes": "https://github.com/tt-a1i/archify/releases/tag/v3.3.1",
+    "severity": "normal",
+    "summary": "Polishes automatic Architecture layout, spine labels, crossing reduction, and Classic styling, and deduplicates cited Explainer files.",
+    "checkedAt": "2026-11-25T16:13:40.545Z",
+    "source": "network",
+    "noticeRequired": true,
+    "noticeText": "Archify update: 3.2.0 → 3.3.1. A newer release is available. Release notes: https://github.com/tt-a1i/archify/releases/tag/v3.3.1. Would you like me to update Archify?",
+    "eventKey": "archify@sha256:b92b4d55446966fd74e5338a45d6de9a7a1b194420cd5eb14d2cdc39f1053b80"
+  },
+  "visualReview": "not-requested",
+  "durationMs": 2643,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  }
+}

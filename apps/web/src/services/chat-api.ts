@@ -1,4 +1,55 @@
 const API_URL = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:5000";
+const SESSION_KEY = "rangpt-session-token";
+
+export type ConversationSummary = {
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type StoredMessage = { role: "assistant" | "user"; content: string };
+
+export type StoredConversation = ConversationSummary & { messages: StoredMessage[] };
+
+function sessionToken() {
+  let token = window.localStorage.getItem(SESSION_KEY);
+  if (!token) {
+    token = crypto.randomUUID();
+    window.localStorage.setItem(SESSION_KEY, token);
+  }
+  return token;
+}
+
+async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const response = await fetch(`${API_URL}${path}`, {
+    ...init,
+    headers: {
+      "Content-Type": "application/json",
+      "X-Session-Token": sessionToken(),
+      ...init.headers,
+    },
+  });
+  if (!response.ok) throw new Error(`Request failed (${response.status})`);
+  if (response.status === 204) return undefined as T;
+  return response.json() as Promise<T>;
+}
+
+export function listConversations() {
+  return apiRequest<ConversationSummary[]>("/conversations");
+}
+
+export function createConversation() {
+  return apiRequest<StoredConversation>("/conversations", { method: "POST", body: "{}" });
+}
+
+export function getConversation(id: string) {
+  return apiRequest<StoredConversation>(`/conversations/${id}`);
+}
+
+export function deleteConversation(id: string) {
+  return apiRequest<void>(`/conversations/${id}`, { method: "DELETE" });
+}
 
 function readEventLine(line: string, onDelta: (text: string) => void): boolean {
   const event: unknown = JSON.parse(line);
@@ -33,13 +84,14 @@ function readEventLine(line: string, onDelta: (text: string) => void): boolean {
 }
 
 export async function streamChatMessage(
+  conversationId: string,
   message: string,
   onDelta: (text: string) => void,
 ): Promise<void> {
   const response = await fetch(`${API_URL}/chat`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message }),
+    headers: { "Content-Type": "application/json", "X-Session-Token": sessionToken() },
+    body: JSON.stringify({ conversationId, message }),
   });
 
   if (!response.ok) {

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "3a8a2149-ca66-4d50-b613-9ea5af2ca594",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/home/ranielsobrinho/Desenvolvimento/projetos/llm-chat/.archify/architecture-rangpt-chat-20261125-112845/candidate.json",
+  "output": "/home/ranielsobrinho/Desenvolvimento/projetos/llm-chat/.archify/architecture-rangpt-chat-20261125-112845/rangpt-chat-architecture.html",
+  "specification": {
+    "sha256": "bb4ffc9849bc46ce3738d7fe132aedfd0eddc251ed7e2501ae155990c0764e8d",
+    "bytes": 2198
+  },
+  "artifact": {
+    "sha256": "b1c6f2f64f6fa887f55a996a622aa4327b6f63239a1da39d516862cc2d7d8b8a",
+    "bytes": 814138
+  }
+}

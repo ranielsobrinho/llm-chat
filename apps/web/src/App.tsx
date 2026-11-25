@@ -1,6 +1,13 @@
-import { ArrowUp, Brain, Menu, Moon, Plus, Sparkles, Sun } from "lucide-react";
-import { type FormEvent, type KeyboardEvent, useRef, useState } from "react";
-import { streamChatMessage } from "./services/chat-api";
+import { ArrowUp, Brain, Menu, Moon, Plus, Sparkles, Sun, Trash2 } from "lucide-react";
+import { type FormEvent, type KeyboardEvent, useEffect, useRef, useState } from "react";
+import {
+  type ConversationSummary,
+  createConversation,
+  deleteConversation,
+  getConversation,
+  listConversations,
+  streamChatMessage,
+} from "./services/chat-api";
 
 type Message = {
   id: number;
@@ -45,8 +52,22 @@ export default function App() {
     window.localStorage.getItem("theme") === "dark" ? "dark" : "light",
   );
   const [isSending, setIsSending] = useState(false);
+  const [conversations, setConversations] = useState<ConversationSummary[]>([]);
+  const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const nextId = useRef(1);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    let active = true;
+    listConversations()
+      .then((items) => {
+        if (active) setConversations(items);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
 
   async function sendMessage(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault();
@@ -66,13 +87,28 @@ export default function App() {
     ]);
 
     try {
-      await streamChatMessage(content, (delta) => {
+      let conversationId = activeConversationId;
+      if (!conversationId) {
+        const conversation = await createConversation();
+        conversationId = conversation.id;
+        setActiveConversationId(conversation.id);
+        setConversations((current) => [conversation, ...current]);
+      }
+
+      await streamChatMessage(conversationId, content, (delta) => {
         setMessages((current) =>
           current.map((message) =>
             message.id === assistantId ? { ...message, content: message.content + delta } : message,
           ),
         );
       });
+      setConversations((current) =>
+        current.map((conversation) =>
+          conversation.id === conversationId
+            ? { ...conversation, title: content.slice(0, 72), updatedAt: new Date().toISOString() }
+            : conversation,
+        ),
+      );
     } catch {
       setMessages((current) =>
         current.map((message) =>
@@ -100,9 +136,41 @@ export default function App() {
 
   function startNewChat() {
     setMessages([welcomeMessage]);
+    setActiveConversationId(null);
+    nextId.current = 1;
     setDraft("");
     setSidebarOpen(false);
     inputRef.current?.focus();
+  }
+
+  async function openConversation(id: string) {
+    if (isSending) return;
+    try {
+      const conversation = await getConversation(id);
+      setActiveConversationId(conversation.id);
+      nextId.current = conversation.messages.length + 1;
+      setMessages(
+        conversation.messages.map((message, index) => ({
+          id: index + 1,
+          role: message.role,
+          content: message.content,
+        })),
+      );
+      setSidebarOpen(false);
+    } catch {
+      setConversations((current) => current.filter((conversation) => conversation.id !== id));
+    }
+  }
+
+  async function removeConversation(id: string) {
+    if (isSending) return;
+    try {
+      await deleteConversation(id);
+      setConversations((current) => current.filter((conversation) => conversation.id !== id));
+      if (activeConversationId === id) startNewChat();
+    } catch {
+      // Keep the conversation visible so the user can retry.
+    }
   }
 
   function toggleTheme() {
@@ -152,14 +220,35 @@ export default function App() {
         </button>
         <div className="sidebar-section">
           <p className="section-label">YOUR SPACE</p>
-          <div className="empty-history">
-            <span className="history-glyph">◷</span>
-            <span>
-              Your conversations
-              <br />
-              will show up here
-            </span>
-          </div>
+          {conversations.length === 0 ? (
+            <div className="empty-history">
+              <span className="history-glyph">◷</span>
+              <span>Your conversations will show up here</span>
+            </div>
+          ) : (
+            <div className="conversation-history">
+              {conversations.map((conversation) => (
+                <div className="history-item" key={conversation.id}>
+                  <button
+                    type="button"
+                    className={`history-open ${conversation.id === activeConversationId ? "history-active" : ""}`}
+                    onClick={() => void openConversation(conversation.id)}
+                    title={conversation.title}
+                  >
+                    {conversation.title}
+                  </button>
+                  <button
+                    type="button"
+                    className="history-delete"
+                    aria-label={`Delete ${conversation.title}`}
+                    onClick={() => void removeConversation(conversation.id)}
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         <div className="sidebar-bottom">
           <div className="learning-card">
